@@ -1,8 +1,0 @@
-
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /objavi
-Disallow: /moji-oglasi
-
-Sitemap: https://povezi.me/sitemap.xml

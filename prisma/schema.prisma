@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AdStatus {
+  AKTIVAN
+  ISTEKAO
+  OBRISAN
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  ime          String?
+  telefon      String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  ads          Ad[]     @relation("UserAds")
+}
+
+model Ad {
+  id         String   @id @default(uuid())
+  naslov     String
+  slug       String   @unique
+  opis       String
+  kategorija String
+  cijena     Decimal  @db.Decimal(10, 2)
+  lokacija   String
+  status     AdStatus @default(AKTIVAN)
+  createdAt  DateTime @default(now())
+
+  vlasnikId  String
+  vlasnik    User     @relation("UserAds", fields: [vlasnikId], references: [id])
+
+  images     AdImage[]
+
+  @@index([kategorija])
+  @@index([createdAt])
+  @@index([vlasnikId])
+}
+
+model AdImage {
+  id     String @id @default(uuid())
+  url    String
+  order  Int    @default(0)
+
+  adId   String
+  ad     Ad     @relation(fields: [adId], references: [id])
+
+  @@index([adId])
+}
